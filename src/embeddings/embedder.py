@@ -14,11 +14,11 @@ FALLBACK_MODELS = [
 
 class EmbeddingClient:
     """
-    간단한 임베딩 래퍼.
+    Simple embedding wrapper.
 
-    - 기본 모델은 GPT-4o 계열 임베딩(`text-embedding-4`)
-    - 환경 변수 `OPENAI_EMBED_MODEL`로 재정의 가능
-    - 입력은 문자열 시퀀스(리스트, 튜플 등)여야 함
+    - Default model is GPT-4o series embedding (`text-embedding-4`)
+    - Can be overridden via `OPENAI_EMBED_MODEL` environment variable
+    - Input must be a sequence of strings (list, tuple, etc.)
     """
 
     def __init__(self, model_name: str | None = None) -> None:
@@ -62,7 +62,7 @@ _default_client = EmbeddingClient()
 
 def embed_texts(texts: Sequence[str]) -> List[List[float]]:
     """
-    편의용 함수. 기본 클라이언트를 사용해 리스트 반환.
+    Convenience function. Returns list using default client.
     """
 
     return _default_client.embed(texts)
