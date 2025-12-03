@@ -1,0 +1,2 @@
+# This file ensures the cache/ directory is tracked by Git
+# Force vectors will be generated here via: python main.py build-cache

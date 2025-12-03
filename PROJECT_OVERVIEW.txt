@@ -1,0 +1,79 @@
+# ForcePath 프로젝트 개요
+
+## 프로젝트 목적
+
+ForcePath는 입력된 사회적 문장을 GPT-4o 임베딩 공간으로 사상하고, CMA-ES를 이용해 주변의 가능 경로를 탐색하여 “구조적으로 안정적인 방향”을 제안하는 시뮬레이터입니다.
+
+- LLM 재학습 없이 OpenAI 임베딩 API 위에서 동작  
+- 가치(value)가 아니라 힘(force) 축의 균형으로 평가  
+- 최종 단계에서 자연어 요약을 제공해 해석 가능성 확보
+
+## 핵심 흐름
+
+1. **임베딩**: `src/embeddings/embedder.py`가 GPT-4o 기반 모델(`text-embedding-4`)을 호출해 입력 문장을 벡터화합니다.  
+2. **Force 벡터 로딩**: `src/forces/force_manager.py`가 `cache/force_vectors.npy`와 `src/config/force_weights.json`을 읽어 8개 축의 벡터/가중치를 준비합니다.  
+3. **후보 탐색**: `src/engine/cma_runner.py`가 CMA-ES를 한 세대 진행하여 현재 위치 주변 후보 벡터를 생성합니다.  
+4. **Height 평가**: `src/engine/height_calculator.py`가 force 곱셈 구조와 패널티(`src/penalties/*`)를 이용해 각 후보의 height(낮을수록 적합)를 계산합니다.  
+5. **스텝 업데이트**: `src/engine/simulator.py`가 가장 낮은 height를 가진 후보를 차기 위치로 선택하고, 지정된 step 수만큼 반복합니다.  
+6. **자연어 디코딩**: `src/decoder/*` 모듈이 force 기여 요약과 최근접 문맥(문장 임베딩 기반)을 조합해 사람이 읽을 수 있는 설명을 제공합니다.
+
+## Height 계산
+
+```python
+total_force_product = ∏ [max(dot(v, force_i), ε) ** w_i for i in forces]
+penalty_social = 1 / max(cosine_similarity(v, social_ref_vector), ε)
+penalty_distance = 1 + α * ||v - x_current||
+
+height = (1 / (total_force_product + ε)) * penalty_social * penalty_distance
+```
+
+- 곱셈 구조로 한 축이라도 약하면 전체 점수가 낮아집니다.  
+- `social_penalty`는 사회적 문맥에서 벗어나는 후보를 완만하게 억제합니다.  
+- `distance_penalty`는 과도한 이동에 비용을 부과합니다.
+
+## 데이터 & 캐시
+
+- `data/forces/forces.yaml`: 8개 사회 축의 대표 문장을 YAML 구조로 저장  
+- `data/social_reference.yaml`: 사회 영역 판별을 위한 참조 문장 목록  
+- `cache/force_vectors.npy`: 한 번 생성된 force 벡터(평균 임베딩)를 재사용  
+- `src/forces/force_builder.py rebuild_force_cache()`: OpenAI 임베딩으로 캐시를 다시 구축
+
+## 디렉터리 맵
+
+```
+ForcePath/
+├── main.py                     # CLI: build-cache / simulate
+├── data/
+│   ├── forces/forces.yaml
+│   └── social_reference.yaml
+├── cache/force_vectors.npy
+├── src/
+│   ├── config/                 # settings, CMA/height config, weights
+│   ├── embeddings/             # OpenAI 임베더, social penalty
+│   ├── forces/                 # force 빌더/매니저/상호작용
+│   ├── penalties/              # distance, social, aggregator
+│   ├── engine/                 # CMA runner, height calculator, simulator
+│   ├── decoder/                # force 요약, 최근접 문맥, 자연어 출력
+│   └── utils/                  # IO, 로거, 수학 유틸
+└── test/                       # pytest 기반 단위 테스트
+```
+
+## 설치 & 실행
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+
+python main.py build-cache
+python main.py simulate --sentence "..." --steps 5 --output runs/latest.jsonl
+```
+
+필수 패키지: `openai`, `numpy`, `cma`, `pyyaml`, `python-dotenv`, `tqdm`.
+
+## 개발 원칙
+
+- 학습 없이 재현 가능한 경량 파이프라인  
+- YAML/JSON 기반 데이터 정의로 유지보수성 확보  
+- 테스트(`pytest`)로 핵심 엔진/디코더 동작 검증  
+- CLI 중심의 reproducible workflow 제공

@@ -1,0 +1,17 @@
+{
+  "step": 0,
+  "current_height": 2500.0,
+  "best_height": 2303.2548,
+  "best_vector": [0.012, -0.034, 0.056, "..."],
+  "force_scores": {
+    "security": 1.3665,
+    "sustainability": 1.0294,
+    "hierarchy": 0.9410,
+    "equality": 0.8127,
+    "solidarity": 0.7743,
+    "identity": 0.6968,
+    "technology": 0.6493,
+    "market": 0.2373
+  },
+  "summary": "In this future society, the structure is heavily influenced by a heightened emphasis on security..."
+}

@@ -1,0 +1,2 @@
+# This file ensures the runs/ directory is tracked by Git
+# Simulation outputs will be saved here via: python main.py simulate --output runs/example.jsonl

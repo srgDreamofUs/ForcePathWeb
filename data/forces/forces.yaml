@@ -1,0 +1,58 @@
+forces:
+  equality:
+    sentences:
+      - "Institutions emphasize redistribution to reduce disparities in income, wealth, and opportunity."
+      - "Universal guarantees of basic welfare and human dignity are prioritized over selective access."
+      - "Public systems expand protections for vulnerable groups and ensure fairness across social positions."
+      - "Policies aim to minimize exclusion by equalizing access to education, health, and essential resources."
+      - "Social progress is framed as narrowing structural gaps and enabling broad, inclusive mobility."
+  hierarchy:
+    sentences:
+      - "Decision-making authority accumulates in a small elite, and governance flows downward through rigid, asymmetric chains of command."
+      - "Institutions secure their power by expanding rule-making capacities, surveillance mechanisms, and coercive enforcement."
+      - "Hierarchical orders persist by minimizing uncertainty and concentrating resources under centralized control."
+      - "Power-holding groups strategically resist reforms that redistribute authority or weaken structural dominance."
+      - "Political stability is pursued by reinforcing top-down coordination rather than diversifying participation."
+  identity:
+    sentences:
+      - "Collective identity—ethnic, religious, cultural—becomes a primary criterion for political alignment."
+      - "In-group boundaries intensify and guide support, trust, and policy preferences."
+      - "Identity conflicts shape social cohesion, often producing exclusion, homogenization, or hostility."
+      - "Cultural narratives and historical grievances become mobilizing forces for collective action."
+      - "Political legitimacy is increasingly tied to representing the identity interests of specific groups."
+  market:
+    sentences:
+      - "Economic efficiency is sought through competition, voluntary exchange, and minimal regulatory restraint."
+      - "Capital and firms are encouraged to pursue risk, innovation, and profit under decentralized incentives."
+      - "State intervention is limited to safeguarding market functioning rather than directing outcomes."
+      - "Resource allocation is primarily determined by price signals and competitive performance."
+      - "Regulation is justified only when market failures outweigh the benefits of autonomy."
+  security:
+    sentences:
+      - "Geopolitical tensions and external threats reorganize national priorities around defense and protection."
+      - "Military, intelligence, and economic coercion expand as tools for securing state survival."
+      - "Security crises justify tighter internal control, surveillance, and social discipline."
+      - "Risk of conflict drives resource concentration toward deterrence and strategic readiness."
+      - "Perceived threats reshape alliances, trade patterns, and domestic governance structures."
+  solidarity:
+    sentences:
+      - "Interpersonal trust and cooperative norms reduce conflict and stabilize collective behavior."
+      - "Civic participation and community networks strengthen resilience in crises."
+      - "High social capital lowers coordination costs and encourages mutual support."
+      - "Shared values and reciprocal obligations enhance cohesion across diverse groups."
+      - "Societies with strong solidarity manage disputes through negotiation rather than coercion."
+  sustainability:
+    sentences:
+      - "Environmental constraints shape policy choices, economic planning, and resource allocation."
+      - "Climate risks impose immediate limits on development models and industrial activity."
+      - "Long-term survival requires preserving ecosystems, biodiversity, and stable resource cycles."
+      - "Sustainable design becomes a mandatory principle for institutions facing ecological thresholds."
+      - "Resource scarcity triggers structural adaptation toward low-impact, regenerative practices."
+  technology:
+    sentences:
+      - "Technological innovation restructures production, governance, communication, and surveillance."
+      - "Automation and AI reconfigure labor roles by substituting, augmenting, or reallocating tasks."
+      - "Digital platforms centralize data, influence, and market power around algorithmic infrastructures."
+      - "Technological systems accelerate decision-making but introduce dependence on opaque mechanisms."
+      - "Institutional change follows the incentives created by computational efficiency and data control."
+

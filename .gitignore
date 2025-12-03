@@ -1,0 +1,23 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Cache and runs - exclude contents but keep .gitkeep
+cache/*
+!cache/.gitkeep
+runs/*
+!runs/.gitkeep
+
+# Temporary output files
+simulation_output*.txt
+english_results*.txt
+convert_*.py
+show_metrics.py
+display_results.py
+
+# Large JSONL files
+run_*.jsonl
+metrics*.jsonl
+!runs/example.jsonl

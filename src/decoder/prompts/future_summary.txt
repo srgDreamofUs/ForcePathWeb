@@ -1,0 +1,5 @@
+{forces}
+{direction}
+
+Context cues:
+{contexts}
