@@ -1,11 +1,35 @@
-# Core dependencies
+# -----------------------
+# Core: ForcePath Engine
+# -----------------------
 openai>=1.0.0
 numpy>=1.24.0
 cma>=3.3.0
 pyyaml>=6.0
-python-dotenv>=1.0.0
 tqdm>=4.65.0
+python-dotenv>=1.0.0
 
-# Optional for visualization/analysis
+# Optional (engine analysis, debugging)
 pandas>=2.0.0
 tabulate>=0.9.0
+
+# -----------------------
+# Backend: FastAPI Server
+# -----------------------
+fastapi>=0.110.0
+uvicorn>=0.27.0
+anyio>=3.7.0
+starlette>=0.40.0
+typing-extensions>=4.7.0
+
+# Request parsing (form, file uploads)
+python-multipart>=0.0.6
+
+# Pydantic v2 settings
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+email-validator>=2.1.0
+
+# -----------------------
+# Helpers
+# -----------------------
+annotated-types>=0.6.0

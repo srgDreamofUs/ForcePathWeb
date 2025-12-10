@@ -1,39 +1,120 @@
 # ForcePath
 
-ForcePath is a simulation engine that projects natural-language descriptions of social states into embedding space and explores plausible future trajectories.
+**ForcePath** is an experimental simulation engine that maps natural-language descriptions of social states into a continuous vector space and explores how they may evolve under different structural pressures. The system encodes text into embeddings, perturbs the state using a CMA-ES–based sampler, evaluates candidates against a set of force vectors and penalties, and selects the trajectory that converges toward lower “height” (interpreted as increased stability).
 
-Given an input sentence, the system encodes it using OpenAI embeddings, generates candidate transitions via CMA-ES, and evaluates each candidate using force vectors, penalties, and semantic proximity. The result is a multi-step path that converges toward increasingly stable configurations.
+The project includes the full pipeline: embedding wrappers, force-vector definitions, penalty functions, CMA-ES search, decoding utilities, and a modern React-based Web UI for interactive exploration.
 
-This repository includes the full pipeline: embedding wrappers, force-vector construction, CMA-ES–based search, height evaluation, natural-language decoding, and reproducible run logs.
+---
 
-## Quick Start
+## Key Features
 
+*   **Natural Language to Vector Mapping:** Seamlessly encodes text descriptions into high-dimensional vector spaces.
+*   **Evolutionary Optimization:** Uses CMA-ES (Covariance Matrix Adaptation Evolution Strategy) to explore potential future states.
+*   **Force Vector Analysis:** Evaluates states against defined structural pressures (forces) to determine stability.
+*   **Interactive Web UI:** A modern, glassmorphic React interface for running simulations and visualizing trajectories.
+*   **Bilingual Support:** Full English and Korean support in the Web UI, including AI-powered translation.
+*   **Real-time Streaming:** Stream simulation steps in real-time to the frontend.
+
+---
+
+## How It Works (Conceptual Pipeline)
+
+1.  **Encode:** The input text is converted into an embedding vector.
+2.  **Perturb:** The system uses CMA-ES to generate localized variants of the current state vector.
+3.  **Evaluate:** Each candidate is evaluated against a set of force vectors representing structural pressures.
+4.  **Calculate Height:** A "height" (instability) score is computed using force products, distance penalties, and semantic constraints.
+5.  **Select:** The candidate with the lowest height (highest stability) is selected as the next state.
+6.  **Decode:** The resulting vector is decoded back into a natural-language description.
+7.  **Iterate:** This process repeats for the configured number of steps to generate a trajectory.
+
+---
+
+## Architecture
+
+The project consists of two main components:
+
+### 1. Python Simulation Engine
+*   **Embeddings:** Wrappers for OpenAI and other embedding models.
+*   **Forces & Penalties:** Definitions of social forces and structural penalties.
+*   **Engine:** The core CMA-ES sampler and simulator logic.
+*   **Decoder:** Utilities for converting vectors back to text.
+
+### 2. Web UI (Frontend)
+*   **Framework:** React + TypeScript + Vite.
+*   **Styling:** Tailwind CSS with a custom glassmorphic design system.
+*   **Visualization:** Interactive stability graphs and step cards.
+*   **Communication:** Connects to the Python backend via REST API (`/api/simulate`).
+
+---
+
+## Getting Started (Python Engine)
+
+### Prerequisites
+*   Python 3.10+
+*   Node.js 18+ (for Web UI)
+
+### Installation
+
+1.  **Create a virtual environment:**
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate     # Windows: .venv\Scripts\activate
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3.  **Environment Variables:**
+    Create a `.env` file in the project root:
+    ```ini
+    OPENAI_API_KEY=<your-key>
+    OPENAI_EMBED_MODEL=text-embedding-3-small   # optional override
+    ```
+
+4.  **Build the Cache:**
+    Pre-embed force vectors and reference sentences to speed up simulation:
+    ```bash
+    python main.py build-cache
+    ```
+    This command loads force definitions and reference corpora under `data/`, generates embeddings, and stores them in `cache/`.
+
+---
+
+## Running ForcePath Web UI
+
+The Web UI provides an interactive way to run simulations.
+
+### 1. Start the Backend API
+Run the FastAPI server to handle simulation requests:
 ```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+python -m api.app.main
+# Server running at http://127.0.0.1:8000
 ```
 
-### Required Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-OPENAI_API_KEY=<your-key-here>
-OPENAI_EMBED_MODEL=text-embedding-4   # optional
-```
-
-### Building the Force Cache
-
-Force vectors and reference sentences are pre-embedded for efficient simulation:
-
+### 2. Start the Frontend
+In a new terminal window:
 ```bash
-python main.py build-cache
+cd web
+npm install
+npm run dev
 ```
+Open your browser to `http://localhost:5173` (or the URL shown in the terminal).
 
-This command loads force definitions and reference corpora under `data/`, generates embeddings, and stores them in `cache/`.
+### Features
+*   **Input Scenario:** Type any social scenario to simulate.
+*   **Stability Graph:** Visualize the stability of the trajectory over time.
+*   **Step Cards:** Read the AI-generated summary for each predicted future state.
+*   **Language Toggle:** Switch between English and Korean instantly.
 
-### Running a Simulation
+![Web UI Screenshot Placeholder](docs/images/web-ui-screenshot.png)
+
+---
+
+## Command-Line Usage
+
+You can also run simulations directly from the command line.
 
 ```bash
 python main.py simulate \
@@ -42,93 +123,84 @@ python main.py simulate \
   --output runs/latest.jsonl
 ```
 
-The CLI prints the height, dominant forces, and decoded summaries for each step. When `--output` is provided, steps are saved as JSONL records under `runs/`.
+*   Each step prints the selected candidate, its height, and the decoded summary.
+*   When `--output` is provided, results are written to JSONL for downstream analysis.
 
-The engine uses CMA-ES to generate local variants of the current state and selects the candidate with the minimal height.
-
-## Configuration
-
-Key simulation parameters are defined in `src/config/settings.py`:
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `SIMULATION_STEPS` | 10 | Maximum simulation steps |
-| `SIMULATION_POPULATION` | 8 | CMA-ES population size |
-| `SIMULATION_SIGMA` | 0.1 | CMA-ES step size (lower = more gradual changes) |
-| `OPENAI_EMBED_MODEL` | text-embedding-4 | OpenAI embedding model |
-
-You can override these via environment variables in your `.env` file.
+---
 
 ## Python API Usage
+
+You can integrate ForcePath into your own Python scripts:
 
 ```python
 from src.engine.simulator import Simulator
 from src.decoder.future_decoder import FutureDecoder
 
-# Initialize simulator
 simulator = Simulator()
 decoder = FutureDecoder()
 
-# Run simulation
 sentence = "Society faces increasing polarization and uncertainty."
-for step_result in simulator.run(sentence, steps=4):
-    summary = decoder.decode(step_result.force_scores, step_result.best_vector)
-    print(f"Step {step_result.step + 1}: {summary['summary']}")
-    print(f"Height: {step_result.best_height:.4f}\n")
+
+# Run simulation
+for step in simulator.run(sentence, steps=4):
+    summary = decoder.decode(step.force_scores, step.best_vector)
+    print(f"Step {step.step + 1}: {summary['summary']}")
+    print(f"Height: {step.best_height:.4f}\n")
 ```
 
-## Testing
+---
 
-```bash
-pytest
-```
+## Configuration
 
-Unit tests cover the core engine, embedding utilities, decoders, and penalty functions in the `test/` directory.
+Key parameters are defined in `src/config/settings.py`. All values may be overridden through environment variables.
 
-## Project Structure
+| Parameter | Default | Description |
+| :--- | :--- | :--- |
+| `SIMULATION_STEPS` | 10 | Maximum number of steps |
+| `SIMULATION_POPULATION` | 8 | CMA-ES population size |
+| `SIMULATION_SIGMA` | 0.1 | Step size; lower values yield more gradual movement |
+| `OPENAI_EMBED_MODEL` | `text-embedding-3-small` | Embedding model to use |
 
-```text
+---
+
+## Project Layout
+
+```graphql
 ForcePath/
-├── LICENSE                 # MIT License
-├── README.md              # This file
-├── requirements.txt       # Python dependencies
-├── .gitignore            # Git exclusions
-├── .env                  # Environment variables (create this)
-├── main.py               # CLI entry point
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── .env                     # User-supplied environment variables
+├── main.py                  # CLI entry point
+├── api/                     # FastAPI backend
+│   ├── app/
+│   │   ├── main.py          # API entry point
+│   │   └── routes/          # API endpoints
 ├── src/
-│   ├── config/           # Settings and configuration
-│   ├── embeddings/       # OpenAI embedding wrapper
-│   ├── forces/           # Force vector construction
-│   ├── penalties/        # Distance and social penalties
-│   ├── engine/           # CMA-ES sampler and simulator
-│   ├── decoder/          # Natural language decoder (GPT-4o)
-│   └── utils/            # Logging and I/O utilities
+│   ├── config/              # Settings and parameter definitions
+│   ├── embeddings/          # Embedding wrappers
+│   ├── forces/              # Force vectors and utilities
+│   ├── penalties/           # Distance and structural penalties
+│   ├── engine/              # CMA-ES sampler and simulator
+│   ├── decoder/             # Natural-language decoding
+│   └── utils/               # Logging and helper functions
+├── web/                     # React Web UI
+│   ├── src/
+│   │   ├── components/      # UI components (StabilityGraph, StepCard, etc.)
+│   │   ├── hooks/           # Custom React hooks
+│   │   └── utils/           # Frontend utilities
+│   └── tailwind.config.cjs  # Styling configuration
 ├── data/
-│   ├── forces/           # Force definitions (YAML)
-│   └── social_reference.yaml  # Reference sentences
-├── cache/                # Precomputed embeddings (.gitkeep)
-├── runs/                 # Simulation outputs (.gitkeep)
-│   └── example.jsonl     # Example output structure
-└── test/                 # Unit tests
+│   ├── forces/              # YAML force definitions
+│   └── social_reference.yaml
+├── cache/                   # Generated embeddings
+├── runs/                    # Simulation outputs
+└── test/                    # Unit tests
 ```
 
-## How It Works
-
-1. **Embedding**: Input sentence → GPT-4o embedding vector
-2. **Force Evaluation**: Compute alignment with 8 social force vectors (security, sustainability, hierarchy, equality, solidarity, identity, technology, market)
-3. **CMA-ES Search**: Generate candidate future states around current position
-4. **Height Calculation**: Evaluate stability using force product, social penalty, and distance penalty
-5. **Selection**: Choose candidate with lowest height (most stable)
-6. **Decoding**: Use GPT-4o to generate concrete natural language description
-7. **Iteration**: Repeat for specified number of steps
-
-## Notes
-
-- ForcePath is designed as a reproducible, inspectable experimental system rather than a fixed predictive model
-- All parameters can be tuned in `settings.py` or via environment variables
-- The system is suitable for experimentation, research, and potential integration into interactive tools
-- Lower `SIMULATION_SIGMA` values produce more gradual, realistic transitions
+---
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License. See [LICENSE](LICENSE) for details.
