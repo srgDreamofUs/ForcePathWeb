@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd web && npm run build",
+  "outputDirectory": "web/dist",
+  "framework": "vite",
+  "ignoreCommand": "exit 0",
+  "functions": {
+    "api/**": {
+      "includeFiles": []
+    }
+  }
+}
