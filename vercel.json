@@ -1,11 +1,21 @@
 {
-  "buildCommand": "cd web && npm run build",
-  "outputDirectory": "web/dist",
-  "framework": "vite",
-  "ignoreCommand": "exit 0",
+  "version": 2,
+  "builds": [
+    {
+      "src": "web/package.json",
+      "use": "@vercel/static-build"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/web/$1"
+    }
+  ],
   "functions": {
     "api/**": {
       "includeFiles": []
     }
-  }
+  },
+  "ignoreCommand": "exit 0"
 }
