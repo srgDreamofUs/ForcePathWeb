@@ -20,8 +20,8 @@ export default function TrajectorySummary({ summary, isLoading, error, t }: Traj
 
             <div className="relative flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                    <h3 className="text-sm font-semibold text-slate-800">{t.trajectoryOverview}</h3>
-                    <p className="text-[12px] text-slate-500">{t.trajectoryOverviewSubtitle}</p>
+                    <h3 className="text-sm font-semibold text-slate-800">{t.predictionOverview}</h3>
+                    <p className="text-[12px] text-slate-500">{t.predictionOverviewSubtitle}</p>
                 </div>
 
                 {isLoading && (
