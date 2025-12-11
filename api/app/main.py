@@ -63,3 +63,13 @@ if __name__ == "__main__":
         port=settings.api_port,
         reload=settings.api_reload,
     )
+
+from fastapi.responses import JSONResponse
+
+@app.get("/")
+def root_get():
+    return {"status": "ok"}
+
+@app.head("/")
+def root_head():
+    return JSONResponse(content={"status": "ok"})
