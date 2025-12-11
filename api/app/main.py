@@ -64,12 +64,12 @@ if __name__ == "__main__":
         reload=settings.api_reload,
     )
 
-from fastapi.responses import JSONResponse
+from fastapi.responses import PlainTextResponse
 
-@app.get("/")
-def root_get():
-    return {"status": "ok"}
+@app.get("/", include_in_schema=False)
+async def root_get():
+    return PlainTextResponse("ok", status_code=200)
 
-@app.head("/")
-def root_head():
-    return JSONResponse(content={"status": "ok"})
+@app.head("/", include_in_schema=False)
+async def root_head():
+    return PlainTextResponse("", status_code=200)
