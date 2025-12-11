@@ -26,11 +26,12 @@ app = FastAPI(
 origins = [
     "https://forcepath.dev",
     "https://www.forcepath.dev",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       # 허용할 프론트엔드 도메인
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
