@@ -22,5 +22,6 @@ export const ko: Translation = {
     noSummary: "요약을 사용할 수 없습니다",
     title: "ForcePath",
     subtitle: "사회적 궤적 시뮬레이터",
-    footer: "© 2025 ForcePath - AI 기반"
+    footer: "© 2025 ForcePath - AI 기반",
+    errorModel: "모델에 문제가 발생했습니다. 다시 시도 중…"
 }

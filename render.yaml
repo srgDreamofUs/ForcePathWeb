@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: forcepath-api
+    runtime: python
+    buildCommand: pip install -r api/requirements.txt
+    startCommand: uvicorn api.app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: API_HOST
+        value: "0.0.0.0"
+      - key: API_PORT
+        value: $PORT
+      - key: CORS_ORIGINS
+        value: "https://forcepath.dev,https://www.forcepath.dev"
+      # Add your Gemini API key here
+      - key: GEMINI_API_KEY
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true

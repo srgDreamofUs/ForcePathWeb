@@ -20,7 +20,8 @@ export const en = {
     noSummary: "No summary available",
     title: "ForcePath",
     subtitle: "Social Trajectory Simulator",
-    footer: "© 2025 ForcePath - Powered by AI"
+    footer: "© 2025 ForcePath - Powered by AI",
+    errorModel: "The model encountered an issue. Retrying…"
 }
 
 export type Translation = typeof en

@@ -8,6 +8,8 @@ from api.app.core.config import get_settings
 from api.app.core.logging import setup_logging
 from api.app.routes import health, simulate, transition
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Setup logging first
 setup_logging()
 
@@ -19,6 +21,19 @@ app = FastAPI(
     title="ForcePath API",
     description="API for ForcePath social dynamics simulation engine",
     version="1.0.0",
+)
+
+origins = [
+    "https://forcepath.dev",
+    "https://www.forcepath.dev",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,       # 허용할 프론트엔드 도메인
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Configure CORS
