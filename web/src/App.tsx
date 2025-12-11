@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { LanguageProvider, useLanguage } from './hooks/useLanguage';
-import HeaderBar from './components/HeaderBar';
 import LanguageToggle from './components/LanguageToggle';
 import InputPanel from './components/InputPanel';
 import StepCard from './components/StepCard';

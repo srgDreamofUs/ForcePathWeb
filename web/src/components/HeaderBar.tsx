@@ -1,10 +1,10 @@
 import { useLanguage } from '../hooks/useLanguage';
 
 export default function HeaderBar() {
-    const { t } = useLanguage();
+    const { language, toggleLanguage } = useLanguage();
 
     return (
-        <header className="w-full py-6 px-4 sm:px-8 flex items-center justify-between backdrop-blur-md bg-white/10 border-b border-white/20 sticky top-0 z-50">
+        <header className="w-full py-6 px-4 sm:px-8 flex items-center justify-between backdrop-blur-md bg-white/70 border-b border-slate-200">
             <div className="flex flex-col">
                 <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
                     ForcePath
@@ -13,7 +13,14 @@ export default function HeaderBar() {
                     Social Trajectory Simulator
                 </p>
             </div>
-            {/* Language toggle is injected via App layout or separate component */}
+
+            {/* Language Toggle Button */}
+            <button
+                onClick={toggleLanguage}
+                className="text-slate-600 hover:text-slate-800 transition-colors text-sm font-semibold"
+            >
+                {language === 'en' ? 'EN' : 'KO'}
+            </button>
         </header>
     );
 }
