@@ -8,8 +8,6 @@ from api.app.core.config import get_settings
 from api.app.core.logging import setup_logging
 from api.app.routes import health, simulate, transition
 
-from fastapi.middleware.cors import CORSMiddleware
-
 # Setup logging first
 setup_logging()
 
@@ -23,30 +21,24 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Configure CORS - MUST be set BEFORE including routers
+# This allows all frontend domains to access the API
 origins = [
     "https://forcepath.dev",
     "https://www.forcepath.dev",
-    "http://localhost:5173",
+    "http://localhost:5173",  # Vite dev server
+    "http://localhost:3000",  # Alternative dev server
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, OPTIONS, etc.)
+    allow_headers=["*"],  # Allows all headers
 )
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include routers
+# Include routers AFTER CORS middleware
 app.include_router(health.router, prefix="/api")
 app.include_router(simulate.router, prefix="/api")
 app.include_router(transition.router, prefix="/api")
@@ -71,7 +63,3 @@ if __name__ == "__main__":
         port=settings.api_port,
         reload=settings.api_reload,
     )
-
-
-
-
