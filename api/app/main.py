@@ -44,9 +44,9 @@ app.include_router(simulate.router, prefix="/api")
 app.include_router(transition.router, prefix="/api")
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
-    """Root endpoint."""
+    """Root endpoint - responds to both GET and HEAD for health checks."""
     return {
         "message": "ForcePath API",
         "version": "1.0.0",
