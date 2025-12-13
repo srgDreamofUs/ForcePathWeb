@@ -67,9 +67,9 @@ export default function InputPanel({
                 onChange={(e) => onStepsChange(Number(e.target.value))}
                 className="appearance-none w-full md:w-64 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm transition-colors"
                 style={{
-                  // Subtle jelly gradient for secondary action
-                  background: 'radial-gradient(100% 150% at 50% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%)',
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.4)'
+                  // Subtle Pastel Jelly Gradient (Airy, light diffraction)
+                  background: 'radial-gradient(100% 180% at 50% 0%, rgba(232, 240, 255, 0.8) 0%, rgba(240, 230, 255, 0.4) 100%)',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)'
                 }}
               >
                 {[1, 2, 3, 4, 5].map(num => (
@@ -84,30 +84,54 @@ export default function InputPanel({
           <motion.button
             onClick={onRunSimulation}
             disabled={isRunning}
+
+            // 1. Initial Press (Squash)
+            whileTap={{
+              scale: 0.92,
+              scaleY: 0.88, // Strong squash
+              scaleX: 1.05, // Bulge out
+              transition: { type: "spring", stiffness: 520, damping: 18, mass: 0.8 }
+            }}
+
+            // 2. Rebound + Predicting State (Wobble)
+            animate={isRunning ? {
+              scale: [1, 1.02, 0.98, 1], // Subtle wobble
+              transition: {
+                type: "spring",
+                stiffness: 260,
+                damping: 16,
+                mass: 1.1,
+                repeat: Infinity,
+                repeatType: "mirror",
+                repeatDelay: 0.1
+              }
+            } : {
+              // Return to normal
+              scale: 1,
+              transition: { type: "spring", stiffness: 420, damping: 14, mass: 0.9 }
+            }}
+
             whileHover={!isRunning ? {
               scale: 1.05,
               filter: "brightness(1.1)",
               transition: { type: "spring", stiffness: 400, damping: 12 }
             } : {}}
-            whileTap={!isRunning ? {
-              scale: 0.90, // Significant squash
-              scaleY: 0.85,
-              transition: { type: "spring", stiffness: 500, damping: 10 }
-            } : {}}
+
             className={`
               relative overflow-hidden px-10 py-4 rounded-full font-bold text-white shadow-lg
               w-full md:w-auto
-              disabled:opacity-80 disabled:cursor-not-allowed disabled:grayscale-[0.3]
+              disabled:cursor-not-allowed
             `}
             style={{
-              // Organic Multi-stop Radial Gradient (Pink Tip -> Purple Body -> Deep Edge)
-              background: 'radial-gradient(110% 130% at 50% 10%, #F472B6 0%, #A855F7 40%, #7E22CE 100%)',
+              // Organic Multi-stop Radial Gradient (Cyan/Blue Theme -> Refracting Light)
+              background: 'radial-gradient(110% 130% at 50% 10%, #67E8F9 0%, #3B82F6 40%, #1D4ED8 100%)',
+
               // Thick, gummy shadow/highlight stack
               boxShadow: `
                     inset 0 3px 6px rgba(255,255,255,0.4), 
                     inset 0 -3px 6px rgba(0,0,0,0.2),
-                    0 8px 16px rgba(126, 34, 206, 0.3),
-                    0 10px 0 rgba(126, 34, 206, 0.1)
+                    0 8px 16px rgba(29, 78, 216, 0.3),
+                    0 10px 0 rgba(29, 78, 216, 0.1)
                 `,
               border: '1px solid rgba(255,255,255,0.1)'
             }}
