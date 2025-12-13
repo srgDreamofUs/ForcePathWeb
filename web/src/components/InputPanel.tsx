@@ -129,10 +129,10 @@ export default function InputPanel({
                   boxShadow: '0 4px 10px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)'
                 }}
               >
-                {[1, 2, 3, 4, 5].map(num => {
+                {[1, 2, 3].map(num => {
                   let label = `${num} ${t.step}${num > 1 ? 's' : ''}`;
                   if (language === 'ko') {
-                    const krMap: Record<number, string> = { 1: '한단계', 2: '두단계', 3: '세단계', 4: '네단계', 5: '다섯단계' };
+                    const krMap: Record<number, string> = { 1: '한단계', 2: '두단계', 3: '세단계' };
                     label = krMap[num] || label;
                   }
                   return (
@@ -149,30 +149,26 @@ export default function InputPanel({
             onClick={onRunSimulation}
             disabled={isRunning}
 
-            // 1. Initial Press (Squash)
+            // 1. Initial Press (Stronger Jelly Squash)
             whileTap={{
-              scale: 0.92,
-              scaleY: 0.88, // Strong squash
-              scaleX: 1.05, // Bulge out
-              transition: { type: "spring", stiffness: 520, damping: 18, mass: 0.8 }
+              scale: 0.90, // Stronger compression (0.90)
+              transition: { type: "spring", stiffness: 600, damping: 10 } // Snappier/Tangy
             }}
 
             // 2. Rebound + Predicting State (STABILIZED)
-            // Fix: Removed infinite loop. Now sets specific stable state during running.
             animate={isRunning ? {
-              scale: 0.98, // Slight compression to indicate busy/active state, but STATIC
-              boxShadow: "0 4px 12px rgba(99, 102, 241, 0.2)", // Reduced shadow to show 'pressed' depth
-              transition: { type: "spring", stiffness: 300, damping: 20 }
+              scale: 0.98, // Steady predicting state
+              boxShadow: "0 4px 12px rgba(99, 102, 241, 0.2)",
+              transition: { type: "spring", stiffness: 600, damping: 10 }
             } : {
-              // Return to normal
-              scale: 1,
-              transition: { type: "spring", stiffness: 420, damping: 14, mass: 0.9 }
+              scale: 1, // Return to normal
+              transition: { type: "spring", stiffness: 600, damping: 10 }
             }}
 
             whileHover={!isRunning ? {
               scale: 1.05,
               filter: "brightness(1.05)",
-              transition: { type: "spring", stiffness: 400, damping: 12 }
+              transition: { type: "spring", stiffness: 400, damping: 15 } // Smooth hover
             } : {}}
 
             className={`
