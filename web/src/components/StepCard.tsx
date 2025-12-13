@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
+import { useTranslateStep } from '../hooks/useTranslateStep';
 
 interface StepCardProps {
   step: number;
@@ -7,61 +7,12 @@ interface StepCardProps {
   delay: number;
 }
 
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-
 export default function StepCard({ step, summary, delay }: StepCardProps) {
   const { language, t } = useLanguage();
-  const [translatedSummary, setTranslatedSummary] = useState<string>(summary);
-  const [isTranslating, setIsTranslating] = useState(false);
 
-  useEffect(() => {
-    // If language is English, use original summary
-    if (language === 'en') {
-      setTranslatedSummary(summary);
-      return;
-    }
-
-    // If language is Korean, translate
-    const translate = async () => {
-      setIsTranslating(true);
-      try {
-        if (!OPENAI_API_KEY) {
-          setTranslatedSummary(summary + " (API Key missing for translation)");
-          return;
-        }
-
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENAI_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: "Translate the following social simulation summary into natural, professional Korean." },
-              { role: 'user', content: summary }
-            ],
-            temperature: 0.3
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setTranslatedSummary(data.choices[0].message.content);
-        } else {
-          setTranslatedSummary(summary); // Fallback
-        }
-      } catch (e) {
-        console.error("Translation failed", e);
-        setTranslatedSummary(summary);
-      } finally {
-        setIsTranslating(false);
-      }
-    };
-
-    translate();
-  }, [summary, language]);
+  // Use the secure hook for translation
+  // The hook handles 'en' logic internally (returns original text)
+  const { translatedSummary, isTranslating } = useTranslateStep(summary, language);
 
   return (
     <div

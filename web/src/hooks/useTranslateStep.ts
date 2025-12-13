@@ -8,8 +8,7 @@ interface TranslationResult {
 
 export function useTranslateStep(
     originalSummary: string,
-    language: 'en' | 'ko',
-    apiKey?: string
+    language: 'en' | 'ko'
 ): TranslationResult {
     const [translatedSummary, setTranslatedSummary] = useState(originalSummary)
     const [isTranslating, setIsTranslating] = useState(false)
@@ -26,34 +25,14 @@ export function useTranslateStep(
             setError(null)
 
             try {
-                const openaiApiKey = apiKey || import.meta.env.VITE_OPENAI_API_KEY
-
-                if (!openaiApiKey) {
-                    setTranslatedSummary(originalSummary)
-                    setIsTranslating(false)
-                    return
-                }
-
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/ai/translate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${openaiApiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4o-mini',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: 'You are a professional translator. Translate the following text into natural, fluent Korean. Maintain the meaning and tone. Output only the Korean translation, nothing else.'
-                            },
-                            {
-                                role: 'user',
-                                content: originalSummary
-                            }
-                        ],
-                        temperature: 0.3,
-                        max_tokens: 500
+                        text: originalSummary,
+                        target_language: language
                     })
                 })
 
@@ -62,9 +41,7 @@ export function useTranslateStep(
                 }
 
                 const data = await response.json()
-                const translation = data.choices?.[0]?.message?.content || originalSummary
-
-                setTranslatedSummary(translation)
+                setTranslatedSummary(data.translated_text)
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Translation error')
                 setTranslatedSummary(originalSummary)
@@ -74,7 +51,7 @@ export function useTranslateStep(
         }
 
         translateSummary()
-    }, [originalSummary, language, apiKey])
+    }, [originalSummary, language])
 
     return { translatedSummary, isTranslating, error }
 }

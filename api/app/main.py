@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.app.core.logging import setup_logging
-from api.app.routes import health, simulate, transition
+from api.app.routes import health, simulate, transition, ai
 
 setup_logging()
 
@@ -25,6 +25,7 @@ app.add_middleware(
 app.include_router(health.router, prefix="/api")
 app.include_router(simulate.router, prefix="/api")
 app.include_router(transition.router, prefix="/api")
+app.include_router(ai.router, prefix="/api")
 
 # Render health check
 @app.get("/", include_in_schema=False)
