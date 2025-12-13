@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface InputPanelProps {
   inputText: string;
@@ -11,6 +11,11 @@ interface InputPanelProps {
   isRunning: boolean;
 }
 
+// Jelly Motion Constants
+const JELLY_SPRING = { type: "spring", stiffness: 400, damping: 12, mass: 0.8 };
+const JELLY_HOVER = { scale: 1.03, transition: JELLY_SPRING };
+const JELLY_TAP = { scale: 0.92, transition: JELLY_SPRING };
+
 export default function InputPanel({
   inputText,
   onInputChange,
@@ -20,31 +25,35 @@ export default function InputPanel({
   isRunning
 }: InputPanelProps) {
   const { t } = useLanguage();
-  const [isJelly, setIsJelly] = useState(false);
 
-  const handleRunClick = () => {
-    if (isRunning) return;
-    setIsJelly(true);
-    setTimeout(() => setIsJelly(false), 500);
-    onRunSimulation();
-  };
+  // No longer needed: local useState for 'isJelly' since we use Framer Motion
 
   return (
-    <div className="w-full rounded-3xl bg-white/20 backdrop-blur-2xl border border-white/25 shadow-[0_8px_32px_rgba(31,38,135,0.10)] p-6 sm:p-8 transition-all duration-300 hover:scale-[1.01] hover:bg-white/30 hover:shadow-xl">
-      <div className="flex flex-col gap-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="w-full rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(31,38,135,0.05)] p-6 sm:p-8 relative overflow-hidden"
+    >
+      {/* Subtle internal glow/reflection for 'slab' feel */}
+      <div className="absolute inset-0 pointer-events-none rounded-3xl shadow-[inset_0_0_40px_rgba(255,255,255,0.1)]" />
+
+      <div className="flex flex-col gap-6 relative z-10">
         {/* Text Input */}
         <div className="relative group">
           <textarea
             value={inputText}
             onChange={(e) => onInputChange(e.target.value)}
             placeholder={t.inputPlaceholder}
-            className="w-full h-32 bg-white/40 border border-white/50 rounded-2xl p-4 text-slate-800 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:bg-white/60 transition-all resize-none shadow-inner"
+            className="w-full h-32 bg-white/30 border border-white/30 rounded-2xl p-4 text-slate-800 placeholder:text-slate-500/70 focus:outline-none focus:ring-4 focus:ring-purple-300/20 focus:bg-white/50 transition-all resize-none shadow-inner"
           />
-          <div className="absolute inset-0 rounded-2xl pointer-events-none border border-white/20 group-hover:border-white/40 transition-colors" />
+          {/* Jelly border highlight */}
+          <div className="absolute inset-0 rounded-2xl pointer-events-none border border-white/10 group-hover:border-white/30 transition-colors" />
         </div>
 
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
-          {/* Steps Selector */}
+
+          {/* Steps Selector - Jelly Button Feel */}
           <div className="flex flex-col gap-2 w-full md:w-auto">
             <label className="text-sm font-medium text-slate-700 ml-1">
               {t.futureStateDepth}
@@ -52,49 +61,83 @@ export default function InputPanel({
                 {t.futureStateDepthSub}
               </span>
             </label>
-            <div className="relative">
+            <motion.div
+              className="relative"
+              whileHover={JELLY_HOVER}
+              whileTap={JELLY_TAP}
+            >
               <select
                 value={steps}
                 onChange={(e) => onStepsChange(Number(e.target.value))}
-                className="appearance-none w-full md:w-64 bg-white/40 border border-white/50 rounded-xl px-4 py-3 pr-10 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-400/50 cursor-pointer hover:bg-white/50 transition-colors"
+                className="appearance-none w-full md:w-64 bg-white/40 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm hover:bg-white/60 transition-colors"
+                style={{
+                  // Fake thickness / depth
+                  boxShadow: '0 4px 0 rgba(255,255,255,0.2), 0 8px 16px rgba(0,0,0,0.05)'
+                }}
               >
                 {[1, 2, 3, 4, 5].map(num => (
                   <option key={num} value={num}>{num} {t.step}{num > 1 ? 's' : ''}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none" />
-            </div>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 pointer-events-none" />
+            </motion.div>
           </div>
 
-          {/* Run Button */}
-          <button
-            onClick={handleRunClick}
+          {/* Run Button - CRITICAL REDESIGN */}
+          <motion.button
+            onClick={onRunSimulation}
             disabled={isRunning}
+            whileHover={!isRunning ? {
+              scale: 1.05,
+              filter: "brightness(1.1)",
+              transition: { type: "spring", stiffness: 300, damping: 10 }
+            } : {}}
+            whileTap={!isRunning ? {
+              scale: 0.90,
+              scaleY: 0.85, // Squish effect
+              transition: { type: "spring", stiffness: 500, damping: 15 }
+            } : {}}
             className={`
-              relative overflow-hidden px-8 py-3.5 rounded-full font-bold text-white shadow-lg
-              bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500
-              hover:shadow-xl hover:brightness-110 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed
-              transition-all duration-300 w-full md:w-auto
-              ${isJelly ? 'animate-jelly' : ''}
+              relative overflow-hidden px-10 py-4 rounded-full font-bold text-white shadow-lg
+              w-full md:w-auto
+              disabled:opacity-80 disabled:cursor-not-allowed disabled:grayscale-[0.3]
             `}
+            style={{
+              // Radial Gradient like a jelly candy (center highlight)
+              background: 'radial-gradient(120% 120% at 50% 20%, #A855F7 0%, #9333EA 50%, #7E22CE 100%)',
+              // Thick, gummy shadow/highlight
+              boxShadow: `
+                    inset 0 4px 6px rgba(255,255,255,0.4), 
+                    inset 0 -4px 6px rgba(0,0,0,0.2),
+                    0 8px 20px rgba(126, 34, 206, 0.4),
+                    0 12px 0 rgba(126, 34, 206, 0.2)
+                `,
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}
           >
-            <div className="absolute inset-0 bg-white/20 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity" />
-            <span className="relative z-10 flex items-center justify-center gap-2">
+            {/* Glossy shine on top */}
+            <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent rounded-t-full pointer-events-none" />
+
+            <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-md text-lg tracking-wide">
               {isRunning ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full"
+                  />
                   {t.running}
                 </>
               ) : (
                 <>
-                  <span>✨</span>
+                  <span className="text-xl">✨</span>
                   {t.runSimulation}
                 </>
               )}
             </span>
-          </button>
+          </motion.button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
