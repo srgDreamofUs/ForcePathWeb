@@ -102,123 +102,124 @@ export default function InputPanel({
               </motion.button>
             ))}
           </div>
+        </div>
 
-          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
 
-            {/* Steps Selector - Jelly Button Feel */}
-            <div className="flex flex-col gap-2 w-full md:w-auto">
-              <label className="text-sm font-medium text-slate-700 ml-1">
-                {t.futureStateDepth}
-                <span className="block text-xs text-slate-500 font-normal mt-0.5">
-                  {t.futureStateDepthSub}
-                </span>
-              </label>
-              <motion.div
-                className="relative"
-                whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 15 } }}
-                whileTap={{ scale: 0.95, transition: { type: "spring", stiffness: 500, damping: 10 } }}
+          {/* Steps Selector - Jelly Button Feel */}
+          <div className="flex flex-col gap-2 w-full md:w-auto">
+            <label className="text-sm font-medium text-slate-700 ml-1">
+              {t.futureStateDepth}
+              <span className="block text-xs text-slate-500 font-normal mt-0.5">
+                {t.futureStateDepthSub}
+              </span>
+            </label>
+            <motion.div
+              className="relative"
+              whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 15 } }}
+              whileTap={{ scale: 0.95, transition: { type: "spring", stiffness: 500, damping: 10 } }}
+            >
+              <select
+                value={steps}
+                onChange={(e) => onStepsChange(Number(e.target.value))}
+                className="appearance-none w-full md:w-64 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm transition-colors"
+                style={{
+                  // Subtle Pastel Jelly Gradient (Airy, light diffraction)
+                  background: 'radial-gradient(100% 180% at 50% 0%, rgba(232, 240, 255, 0.8) 0%, rgba(240, 230, 255, 0.4) 100%)',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)'
+                }}
               >
-                <select
-                  value={steps}
-                  onChange={(e) => onStepsChange(Number(e.target.value))}
-                  className="appearance-none w-full md:w-64 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm transition-colors"
-                  style={{
-                    // Subtle Pastel Jelly Gradient (Airy, light diffraction)
-                    background: 'radial-gradient(100% 180% at 50% 0%, rgba(232, 240, 255, 0.8) 0%, rgba(240, 230, 255, 0.4) 100%)',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)'
-                  }}
-                >
-                  {[1, 2, 3, 4, 5].map(num => {
-                    let label = `${num} ${t.step}${num > 1 ? 's' : ''}`;
-                    if (language === 'ko') {
-                      const krMap: Record<number, string> = { 1: '한단계', 2: '두단계', 3: '세단계', 4: '네단계', 5: '다섯단계' };
-                      label = krMap[num] || label;
-                    }
-                    return (
-                      <option key={num} value={num}>{label}</option>
-                    );
-                  })}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 pointer-events-none" />
-              </motion.div>
-            </div>
+                {[1, 2, 3, 4, 5].map(num => {
+                  let label = `${num} ${t.step}${num > 1 ? 's' : ''}`;
+                  if (language === 'ko') {
+                    const krMap: Record<number, string> = { 1: '한단계', 2: '두단계', 3: '세단계', 4: '네단계', 5: '다섯단계' };
+                    label = krMap[num] || label;
+                  }
+                  return (
+                    <option key={num} value={num}>{label}</option>
+                  );
+                })}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 pointer-events-none" />
+            </motion.div>
+          </div>
 
-            {/* Run Button - CRITICAL REDESIGN */}
-            <motion.button
-              onClick={onRunSimulation}
-              disabled={isRunning}
+          {/* Run Button - CRITICAL REDESIGN */}
+          <motion.button
+            onClick={onRunSimulation}
+            disabled={isRunning}
 
-              // 1. Initial Press (Squash)
-              whileTap={{
-                scale: 0.92,
-                scaleY: 0.88, // Strong squash
-                scaleX: 1.05, // Bulge out
-                transition: { type: "spring", stiffness: 520, damping: 18, mass: 0.8 }
-              }}
+            // 1. Initial Press (Squash)
+            whileTap={{
+              scale: 0.92,
+              scaleY: 0.88, // Strong squash
+              scaleX: 1.05, // Bulge out
+              transition: { type: "spring", stiffness: 520, damping: 18, mass: 0.8 }
+            }}
 
-              // 2. Rebound + Predicting State (STABILIZED)
-              // Fix: Removed infinite loop. Now sets specific stable state during running.
-              animate={isRunning ? {
-                scale: 0.98, // Slight compression to indicate busy/active state, but STATIC
-                boxShadow: "0 4px 12px rgba(99, 102, 241, 0.2)", // Reduced shadow to show 'pressed' depth
-                transition: { type: "spring", stiffness: 300, damping: 20 }
-              } : {
-                // Return to normal
-                scale: 1,
-                transition: { type: "spring", stiffness: 420, damping: 14, mass: 0.9 }
-              }}
+            // 2. Rebound + Predicting State (STABILIZED)
+            // Fix: Removed infinite loop. Now sets specific stable state during running.
+            animate={isRunning ? {
+              scale: 0.98, // Slight compression to indicate busy/active state, but STATIC
+              boxShadow: "0 4px 12px rgba(99, 102, 241, 0.2)", // Reduced shadow to show 'pressed' depth
+              transition: { type: "spring", stiffness: 300, damping: 20 }
+            } : {
+              // Return to normal
+              scale: 1,
+              transition: { type: "spring", stiffness: 420, damping: 14, mass: 0.9 }
+            }}
 
-              whileHover={!isRunning ? {
-                scale: 1.05,
-                filter: "brightness(1.05)",
-                transition: { type: "spring", stiffness: 400, damping: 12 }
-              } : {}}
+            whileHover={!isRunning ? {
+              scale: 1.05,
+              filter: "brightness(1.05)",
+              transition: { type: "spring", stiffness: 400, damping: 12 }
+            } : {}}
 
-              className={`
+            className={`
               relative overflow-hidden px-10 py-4 rounded-full font-bold text-white shadow-lg
               w-full md:w-auto
               disabled:cursor-not-allowed
             `}
-              style={{
-                // Pastel Glass Jelly Gradient UPDATED: Higher Transparency
-                // Using RGBA with 0.75 alpha for glass effect
-                background: 'radial-gradient(140% 140% at 50% 10%, rgba(165, 180, 252, 0.75) 0%, rgba(129, 140, 248, 0.75) 40%, rgba(99, 102, 241, 0.75) 100%)',
+            style={{
+              // Pastel Glass Jelly Gradient UPDATED: Higher Transparency
+              // Using RGBA with 0.75 alpha for glass effect
+              background: 'radial-gradient(140% 140% at 50% 10%, rgba(165, 180, 252, 0.75) 0%, rgba(129, 140, 248, 0.75) 40%, rgba(99, 102, 241, 0.75) 100%)',
 
-                // Thick, glass-jelly shadow/highlight stack
-                // Softer highlights for more 'air'
-                boxShadow: `
+              // Thick, glass-jelly shadow/highlight stack
+              // Softer highlights for more 'air'
+              boxShadow: `
                     inset 0 2px 4px rgba(255,255,255,0.5),
                     inset 0 -2px 4px rgba(0,0,0,0.05),
                     0 8px 20px rgba(99, 102, 241, 0.25),
                     0 10px 0 rgba(99, 102, 241, 0.1)
                 `,
-                border: '1px solid rgba(255,255,255,0.3)',
-                backdropFilter: 'blur(8px)' // Increased local blur
-              }}
-            >
-              {/* Glossy shine on top half */}
-              <div className="absolute top-0 left-0 right-0 h-2/5 bg-gradient-to-b from-white/40 to-transparent rounded-t-full pointer-events-none" />
+              border: '1px solid rgba(255,255,255,0.3)',
+              backdropFilter: 'blur(8px)' // Increased local blur
+            }}
+          >
+            {/* Glossy shine on top half */}
+            <div className="absolute top-0 left-0 right-0 h-2/5 bg-gradient-to-b from-white/40 to-transparent rounded-t-full pointer-events-none" />
 
-              <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-md text-lg tracking-wide">
-                {isRunning ? (
-                  <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-5 h-5 border-3 border-white/40 border-t-white rounded-full"
-                    />
-                    {t.running}
-                  </>
-                ) : (
-                  <>
-                    <span className="text-xl">✨</span>
-                    {t.runSimulation}
-                  </>
-                )}
-              </span>
-            </motion.button>
-          </div>
+            <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-md text-lg tracking-wide">
+              {isRunning ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-5 h-5 border-3 border-white/40 border-t-white rounded-full"
+                  />
+                  {t.running}
+                </>
+              ) : (
+                <>
+                  <span className="text-xl">✨</span>
+                  {t.runSimulation}
+                </>
+              )}
+            </span>
+          </motion.button>
         </div>
+      </div>
     </motion.div>
   );
 }
