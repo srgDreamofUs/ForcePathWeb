@@ -14,6 +14,36 @@ interface InputPanelProps {
 // Jelly Motion Constants
 
 
+// Jelly Motion Constants exported for reuse if needed, or kept internal
+// ...
+
+const EXAMPLE_PROMPTS = [
+  {
+    id: 'mercantilist',
+    label: { en: 'Late European Mercantilist Society', ko: '후기 유럽 중상주의 사회' },
+    text: {
+      en: 'A society in which the state centralizes power to accumulate wealth through trade surpluses, regulates markets to favor domestic producers, and expands colonial networks to secure resources. Economic growth is prioritized over individual freedom, creating rising class stratification, geopolitical competition, and internal pressure for systemic transformation.',
+      ko: '국가는 무역 흑자를 통해 부를 축적하기 위해 권력을 중앙집중화하고, 국내 생산자를 보호하기 위해 시장을 규제하며, 자원 확보를 위해 식민지 네트워크를 확장하는 사회이다. 개인의 자유보다 경제 성장이 우선시되며, 그 결과 계층 분화의 심화, 지정학적 경쟁, 그리고 체제 전환을 요구하는 내부 압력이 축적된다.'
+    }
+  },
+  {
+    id: 'socialist',
+    label: { en: 'Late Cold War State-Socialist Society', ko: '냉전기 후기 국가사회주의 사회' },
+    text: {
+      en: 'A society where the state controls the means of production in pursuit of equality and social stability, while increasing bureaucratic rigidity, information asymmetry, and declining economic efficiency accumulate over time. The tension between ideological cohesion and structural stagnation shapes uncertain future trajectories.',
+      ko: '국가는 평등과 사회적 안정을 목표로 생산수단을 통제하지만, 시간이 지남에 따라 관료적 경직성, 정보 비대칭, 경제 효율성 저하가 누적되는 사회이다. 이념적 결속과 구조적 정체 사이의 긴장이 불확실한 미래 경로를 형성한다.'
+    }
+  },
+  {
+    id: 'digital',
+    label: { en: 'Contemporary Global Digital-Capitalist Society', ko: '현대 글로벌 디지털 자본주의 사회' },
+    text: {
+      en: 'A society shaped by globalized digital capitalism, where technological platforms mediate economic activity, social interaction, and information flows. Market efficiency and innovation are prioritized, while wealth concentration, algorithmic influence, and social polarization intensify, generating structural tension between connectivity, autonomy, and long-term stability.',
+      ko: '글로벌 디지털 자본주의에 의해 형성된 사회로, 기술 플랫폼이 경제 활동과 사회적 상호작용, 정보 흐름을 매개한다. 시장 효율성과 혁신이 우선시되는 가운데, 부의 집중, 알고리즘의 영향력, 사회적 양극화가 심화되며 연결성, 개인의 자율성, 장기적 안정성 사이의 구조적 긴장이 발생한다.'
+    }
+  }
+];
+
 export default function InputPanel({
   inputText,
   onInputChange,
@@ -22,7 +52,7 @@ export default function InputPanel({
   onRunSimulation,
   isRunning
 }: InputPanelProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <motion.div
@@ -45,6 +75,28 @@ export default function InputPanel({
           />
           {/* Jelly border highlight */}
           <div className="absolute inset-0 rounded-2xl pointer-events-none border border-white/10 group-hover:border-white/30 transition-colors" />
+        </div>
+
+        {/* Historical Example Prompts Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 overflow-x-auto pb-1 scrollbar-hide">
+          {EXAMPLE_PROMPTS.map((prompt) => (
+            <motion.button
+              key={prompt.id}
+              onClick={() => onInputChange(prompt.text[language])}
+              whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.25)" }}
+              whileTap={{ scale: 0.98 }}
+              className="flex-1 min-w-[200px] px-4 py-3 rounded-xl border border-white/20 shadow-sm text-left transition-colors relative overflow-hidden group"
+              style={{
+                background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(96, 165, 250, 0.15) 100%)',
+                backdropFilter: 'blur(8px)'
+              }}
+            >
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative z-10 text-xs font-semibold text-slate-700/90 leading-tight block">
+                {prompt.label[language]}
+              </span>
+            </motion.button>
+          ))}
         </div>
 
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
@@ -113,7 +165,7 @@ export default function InputPanel({
 
             whileHover={!isRunning ? {
               scale: 1.05,
-              filter: "brightness(1.1)",
+              filter: "brightness(1.05)",
               transition: { type: "spring", stiffness: 400, damping: 12 }
             } : {}}
 
@@ -123,17 +175,17 @@ export default function InputPanel({
               disabled:cursor-not-allowed
             `}
             style={{
-              // Organic Multi-stop Radial Gradient (Cyan/Blue Theme -> Refracting Light)
-              background: 'radial-gradient(110% 130% at 50% 10%, #67E8F9 0%, #3B82F6 40%, #1D4ED8 100%)',
+              // Pastel Glass Jelly Gradient (Harmonized Blue/Purple)
+              background: 'radial-gradient(140% 140% at 50% 10%, #A5B4FC 0%, #818CF8 40%, #6366F1 100%)',
 
-              // Thick, gummy shadow/highlight stack
+              // Thick, glass-jelly shadow/highlight stack (Softer than before)
               boxShadow: `
                     inset 0 3px 6px rgba(255,255,255,0.4), 
-                    inset 0 -3px 6px rgba(0,0,0,0.2),
-                    0 8px 16px rgba(29, 78, 216, 0.3),
-                    0 10px 0 rgba(29, 78, 216, 0.1)
+                    inset 0 -3px 6px rgba(0,0,0,0.1),
+                    0 8px 20px rgba(99, 102, 241, 0.3),
+                    0 10px 0 rgba(99, 102, 241, 0.1)
                 `,
-              border: '1px solid rgba(255,255,255,0.1)'
+              border: '1px solid rgba(255,255,255,0.2)'
             }}
           >
             {/* Glossy shine on top half */}
