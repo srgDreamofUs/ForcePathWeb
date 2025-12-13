@@ -106,30 +106,20 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
           />
-
-          {/* Points */}
-          {points.map((p, i) => (
-            <circle
-              key={i}
-              cx={p.x}
-              cy={100 - (p.y * 100)}
-              r="4"
-              fill="white"
-              stroke="#7a8bff"
-              strokeWidth="2"
-              vectorEffect="non-scaling-stroke"
-            />
-          ))}
         </svg>
 
-        {/* HTML Text Overlay Layer (Prevents distortion and overflow) */}
+        {/* HTML Text & Point Overlay Layer (Prevents distortion and overflow) */}
         <div className="absolute inset-x-4 top-6 bottom-8 pointer-events-none">
           {points.map((p, i) => (
             <div key={i} style={{ left: `${p.x}%`, top: `${100 - (p.y * 100)}%` }} className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+
+              {/* Point Marker (HTML for fixed aspect ratio) */}
+              <div className="w-2.5 h-2.5 rounded-full bg-white border-2 border-[#7a8bff] shadow-sm mb-1" />
+
               {/* Value Label */}
               <span
-                className="mb-3 text-xs font-bold text-slate-500 bg-white/80 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap"
-                style={{ transform: 'translateY(-10px)' }}
+                className="mb-2 text-xs font-bold text-slate-500 bg-white/80 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap"
+                style={{ transform: 'translateY(-8px)' }}
               >
                 {p.displayValue}
               </span>

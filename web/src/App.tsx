@@ -23,16 +23,6 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-slate-900 font-sans selection:bg-purple-200">
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: 9999,
-        fontSize: '12px',
-        opacity: 0.4
-      }}>
-        DEPLOY VERIFY — REMOVE AFTER CONFIRMATION
-      </div>
       {/* Background Blobs */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-300/20 rounded-full blur-[100px]" />
