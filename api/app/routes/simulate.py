@@ -293,11 +293,3 @@ async def simulate_stream_legacy(
             yield json.dumps(error_dict) + "\n"
 
     return StreamingResponse(generate(), media_type="application/x-ndjson")
-
-@router.options("/simulate")
-def simulate_options():
-    return Response(status_code=200)
-
-@router.options("/simulate/simulate_stream")
-def simulate_stream_options():
-    return Response(status_code=200)
