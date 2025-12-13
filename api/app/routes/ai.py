@@ -13,14 +13,24 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/ai", tags=["ai"])
 settings = get_settings()
 
-# Initialize OpenAI client
-client = OpenAI(api_key=settings.openai_api_key)
+def get_openai_client() -> OpenAI:
+    """
+    Lazy initialization of OpenAI client.
+    Critically important for Render where env vars might not be ready at import time.
+    """
+    # Try settings first
+    api_key = settings.openai_api_key
+    
+    # Fallback to direct env var (runtime check)
+    if not api_key:
+        import os
+        api_key = os.getenv("OPENAI_API_KEY")
 
-# Allow override from environment if settings not populated correctly
-# (Safety net for local dev vs production env var differences)
-if not client.api_key:
-    import os
-    client.api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        logger.error("Attempted to initialize OpenAI client but OPENAI_API_KEY is missing")
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        
+    return OpenAI(api_key=api_key)
 
 
 class StepSummary(BaseModel):
@@ -46,8 +56,7 @@ class TranslationResponse(BaseModel):
 @router.post("/summary", response_model=SummaryResponse)
 async def generate_summary(request: SummaryRequest) -> SummaryResponse:
     """Generate a holistic summary of the simulation trajectory."""
-    if not client.api_key:
-        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+    client = get_openai_client()
 
     try:
         system_prompt = (
@@ -80,13 +89,18 @@ async def generate_summary(request: SummaryRequest) -> SummaryResponse:
 @router.post("/translate", response_model=TranslationResponse)
 async def translate_text(request: TranslationRequest) -> TranslationResponse:
     """Translate text to the target language (default: Korean)."""
-    if not client.api_key:
-        # If API key missing, return original text to avoid breaking UI
-        return TranslationResponse(translated_text=request.text)
-
     # If target is English, just return original (assuming input is English)
     if request.target_language == "en":
          return TranslationResponse(translated_text=request.text)
+
+    # Lazy load client - if key is missing, we catch the exception or handle gracefully?
+    # Requirement says "if API key missing, return original text to avoid breaking UI" in previous code.
+    # But get_openai_client raises HTTPException.
+    # Let's handle it here to preserve the "don't break UI" behavior for translation.
+    try:
+        client = get_openai_client()
+    except HTTPException:
+        return TranslationResponse(translated_text=request.text)
 
     try:
         system_prompt = "You are a professional translator. Translate the following text into natural, fluent Korean. Maintain the meaning and tone. Output only the Korean translation, nothing else."
