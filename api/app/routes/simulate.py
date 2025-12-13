@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from fastapi.responses import StreamingResponse
 
 from api.app.schemas.request import SimulateRequest
@@ -251,11 +251,6 @@ async def simulate_stream(request: SimulateRequest) -> StreamingResponse:
     return StreamingResponse(
         generate(),
         media_type="application/x-ndjson",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",  # Disable nginx buffering
-        }
     )
 
 
