@@ -73,3 +73,9 @@ async def root_get():
 @app.head("/", include_in_schema=False)
 async def root_head():
     return PlainTextResponse("", status_code=200)
+
+from fastapi import Request, Response
+
+@app.options("/{path:path}")
+async def options_handler(path: str, request: Request):
+    return Response(status_code=200)
