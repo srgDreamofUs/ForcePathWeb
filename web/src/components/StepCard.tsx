@@ -28,6 +28,7 @@ export default function StepCard({ step, summary, delay }: StepCardProps) {
         delay: delay / 1000
       }}
       className="rounded-3xl bg-white/10 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.05),_inset_0_0_32px_rgba(255,255,255,0.05)] p-6 relative overflow-hidden group"
+      data-index={step + 1}
     >
       {/* Glossy top highlight */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

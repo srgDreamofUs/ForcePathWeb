@@ -79,7 +79,7 @@ export default function InputPanel({
 
         {/* Historical Example Prompts Buttons */}
         <div className="flex flex-col gap-2">
-          <span className="text-xs font-medium text-slate-500/80 ml-1">
+          <span className="text-xs font-semibold text-slate-600 ml-1">
             {t.examplePrompts}
           </span>
           <div className="flex flex-col sm:flex-row gap-3 overflow-x-auto pb-1 scrollbar-hide">
@@ -181,8 +181,8 @@ export default function InputPanel({
             `}
               style={{
                 // Pastel Glass Jelly Gradient UPDATED: Higher Transparency
-                // Using RGBA with 0.85 alpha for glass effect
-                background: 'radial-gradient(140% 140% at 50% 10%, rgba(165, 180, 252, 0.85) 0%, rgba(129, 140, 248, 0.85) 40%, rgba(99, 102, 241, 0.85) 100%)',
+                // Using RGBA with 0.75 alpha for glass effect
+                background: 'radial-gradient(140% 140% at 50% 10%, rgba(165, 180, 252, 0.75) 0%, rgba(129, 140, 248, 0.75) 40%, rgba(99, 102, 241, 0.75) 100%)',
 
                 // Thick, glass-jelly shadow/highlight stack
                 // Softer highlights for more 'air'
@@ -193,7 +193,7 @@ export default function InputPanel({
                     0 10px 0 rgba(99, 102, 241, 0.1)
                 `,
                 border: '1px solid rgba(255,255,255,0.3)',
-                backdropFilter: 'blur(4px)' // Increased local blur
+                backdropFilter: 'blur(8px)' // Increased local blur
               }}
             >
               {/* Glossy shine on top half */}
