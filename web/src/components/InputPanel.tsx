@@ -12,9 +12,7 @@ interface InputPanelProps {
 }
 
 // Jelly Motion Constants
-const JELLY_SPRING = { type: "spring", stiffness: 400, damping: 12, mass: 0.8 };
-const JELLY_HOVER = { scale: 1.03, transition: JELLY_SPRING };
-const JELLY_TAP = { scale: 0.92, transition: JELLY_SPRING };
+
 
 export default function InputPanel({
   inputText,
@@ -25,8 +23,6 @@ export default function InputPanel({
   isRunning
 }: InputPanelProps) {
   const { t } = useLanguage();
-
-  // No longer needed: local useState for 'isJelly' since we use Framer Motion
 
   return (
     <motion.div
@@ -63,16 +59,17 @@ export default function InputPanel({
             </label>
             <motion.div
               className="relative"
-              whileHover={JELLY_HOVER}
-              whileTap={JELLY_TAP}
+              whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 15 } }}
+              whileTap={{ scale: 0.95, transition: { type: "spring", stiffness: 500, damping: 10 } }}
             >
               <select
                 value={steps}
                 onChange={(e) => onStepsChange(Number(e.target.value))}
-                className="appearance-none w-full md:w-64 bg-white/40 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm hover:bg-white/60 transition-colors"
+                className="appearance-none w-full md:w-64 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm transition-colors"
                 style={{
-                  // Fake thickness / depth
-                  boxShadow: '0 4px 0 rgba(255,255,255,0.2), 0 8px 16px rgba(0,0,0,0.05)'
+                  // Subtle jelly gradient for secondary action
+                  background: 'radial-gradient(100% 150% at 50% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%)',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.4)'
                 }}
               >
                 {[1, 2, 3, 4, 5].map(num => (
@@ -90,12 +87,12 @@ export default function InputPanel({
             whileHover={!isRunning ? {
               scale: 1.05,
               filter: "brightness(1.1)",
-              transition: { type: "spring", stiffness: 300, damping: 10 }
+              transition: { type: "spring", stiffness: 400, damping: 12 }
             } : {}}
             whileTap={!isRunning ? {
-              scale: 0.90,
-              scaleY: 0.85, // Squish effect
-              transition: { type: "spring", stiffness: 500, damping: 15 }
+              scale: 0.90, // Significant squash
+              scaleY: 0.85,
+              transition: { type: "spring", stiffness: 500, damping: 10 }
             } : {}}
             className={`
               relative overflow-hidden px-10 py-4 rounded-full font-bold text-white shadow-lg
@@ -103,20 +100,20 @@ export default function InputPanel({
               disabled:opacity-80 disabled:cursor-not-allowed disabled:grayscale-[0.3]
             `}
             style={{
-              // Radial Gradient like a jelly candy (center highlight)
-              background: 'radial-gradient(120% 120% at 50% 20%, #A855F7 0%, #9333EA 50%, #7E22CE 100%)',
-              // Thick, gummy shadow/highlight
+              // Organic Multi-stop Radial Gradient (Pink Tip -> Purple Body -> Deep Edge)
+              background: 'radial-gradient(110% 130% at 50% 10%, #F472B6 0%, #A855F7 40%, #7E22CE 100%)',
+              // Thick, gummy shadow/highlight stack
               boxShadow: `
-                    inset 0 4px 6px rgba(255,255,255,0.4), 
-                    inset 0 -4px 6px rgba(0,0,0,0.2),
-                    0 8px 20px rgba(126, 34, 206, 0.4),
-                    0 12px 0 rgba(126, 34, 206, 0.2)
+                    inset 0 3px 6px rgba(255,255,255,0.4), 
+                    inset 0 -3px 6px rgba(0,0,0,0.2),
+                    0 8px 16px rgba(126, 34, 206, 0.3),
+                    0 10px 0 rgba(126, 34, 206, 0.1)
                 `,
               border: '1px solid rgba(255,255,255,0.1)'
             }}
           >
-            {/* Glossy shine on top */}
-            <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent rounded-t-full pointer-events-none" />
+            {/* Glossy shine on top half */}
+            <div className="absolute top-0 left-0 right-0 h-2/5 bg-gradient-to-b from-white/30 to-transparent rounded-t-full pointer-events-none" />
 
             <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-md text-lg tracking-wide">
               {isRunning ? (
