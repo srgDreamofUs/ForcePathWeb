@@ -14,8 +14,8 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
   // Prepare data points
   const points = useMemo(() => {
     const data = [
-      { label: t.input, height: inputHeight },
-      ...results.map(r => ({ label: `${r.step}`, height: r.current_height }))
+      { label: t.step, height: inputHeight },
+      ...results.map(r => ({ label: `${r.step + 1}`, height: r.current_height }))
     ];
 
     return data.map((d, i) => ({
@@ -30,9 +30,8 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
   const pathData = useMemo(() => {
     if (points.length < 2) return '';
 
-    // Map normalized y (0-1) to SVG coordinates (60-0)
-    // We want 1 (stable) to be at top (0) and 0 (unstable) to be at bottom (60)
-    const mapY = (val: number) => 60 - (val * 50) - 5; // Padding 5px top/bottom
+    // Map normalized y (0-1) to SVG coordinates (100-0)
+    const mapY = (val: number) => 100 - (val * 100);
 
     let d = `M ${points[0].x} ${mapY(points[0].y)}`;
 
@@ -51,8 +50,6 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
     return d;
   }, [points]);
 
-  const mapY = (val: number) => 60 - (val * 50) - 5;
-
   return (
     <div className="w-full rounded-3xl bg-white/20 backdrop-blur-2xl border border-white/25 shadow-[0_8px_32px_rgba(31,38,135,0.10)] p-6 transition-all duration-300 hover:scale-[1.01] hover:bg-white/30 hover:shadow-xl mt-8">
       <div className="mb-4">
@@ -60,11 +57,12 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
         <p className="text-xs text-slate-600">{t.stabilitySubtitle}</p>
       </div>
 
-      <div className="relative w-full aspect-[5/3] md:aspect-[5/2] max-h-[320px]">
+      <div className="relative w-full h-[320px] pt-6 pb-8 px-4">
+        {/* SVG Graph Layer */}
         <svg
           width="100%"
           height="100%"
-          viewBox="0 0 100 60"
+          viewBox="0 0 100 100"
           preserveAspectRatio="none"
           className="overflow-visible"
         >
@@ -73,12 +71,13 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
             <line
               key={val}
               x1="0"
-              y1={mapY(val)}
+              y1={100 - (val * 100)}
               x2="100"
-              y2={mapY(val)}
+              y2={100 - (val * 100)}
               stroke="rgba(255,255,255,0.3)"
-              strokeWidth="0.2"
-              strokeDasharray="2 2"
+              strokeWidth="0.5"
+              strokeDasharray="4 4"
+              vectorEffect="non-scaling-stroke"
             />
           ))}
 
@@ -89,7 +88,7 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
               <stop offset="100%" stopColor="#ff7fc4" />
             </linearGradient>
             <filter id="glow">
-              <feGaussianBlur stdDeviation="1" result="coloredBlur" />
+              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
               <feMerge>
                 <feMergeNode in="coloredBlur" />
                 <feMergeNode in="SourceGraphic" />
@@ -102,45 +101,49 @@ export default function StabilityGraph({ results, inputHeight = 1 }: StabilityGr
             d={pathData}
             fill="none"
             stroke="url(#lineGradient)"
-            strokeWidth="1.5"
+            strokeWidth="3"
             filter="url(#glow)"
             strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
           />
 
           {/* Points */}
           {points.map((p, i) => (
-            <g key={i}>
-              <circle
-                cx={p.x}
-                cy={mapY(p.y)}
-                r="1.5"
-                fill="white"
-                stroke="#7a8bff"
-                strokeWidth="0.5"
-              />
-              {/* Labels */}
-              <text
-                x={p.x}
-                y={mapY(p.y) - 4}
-                textAnchor="middle"
-                fontSize="3"
-                fill="#475569"
-                fontWeight="600"
-              >
-                {p.displayValue}
-              </text>
-              <text
-                x={p.x}
-                y={65}
-                textAnchor="middle"
-                fontSize="2.5"
-                fill="#64748b"
-              >
-                {p.label}
-              </text>
-            </g>
+            <circle
+              key={i}
+              cx={p.x}
+              cy={100 - (p.y * 100)}
+              r="4"
+              fill="white"
+              stroke="#7a8bff"
+              strokeWidth="2"
+              vectorEffect="non-scaling-stroke"
+            />
           ))}
         </svg>
+
+        {/* HTML Text Overlay Layer (Prevents distortion and overflow) */}
+        <div className="absolute inset-x-4 top-6 bottom-8 pointer-events-none">
+          {points.map((p, i) => (
+            <div key={i} style={{ left: `${p.x}%`, top: `${100 - (p.y * 100)}%` }} className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+              {/* Value Label */}
+              <span
+                className="mb-3 text-xs font-bold text-slate-500 bg-white/80 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap"
+                style={{ transform: 'translateY(-10px)' }}
+              >
+                {p.displayValue}
+              </span>
+
+              {/* X-Axis Label (Positioned at bottom of container) */}
+              <span
+                className="absolute top-[calc(100%_+_20px)] text-xs font-medium text-slate-500 whitespace-nowrap"
+                style={{ top: `calc(${p.y * 100}% + 24px)` }}
+              >
+                {p.label}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

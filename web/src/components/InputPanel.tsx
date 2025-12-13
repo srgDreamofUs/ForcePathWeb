@@ -78,139 +78,147 @@ export default function InputPanel({
         </div>
 
         {/* Historical Example Prompts Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 overflow-x-auto pb-1 scrollbar-hide">
-          {EXAMPLE_PROMPTS.map((prompt) => (
-            <motion.button
-              key={prompt.id}
-              onClick={() => onInputChange(prompt.text[language])}
-              whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.25)" }}
-              whileTap={{ scale: 0.98 }}
-              className="flex-1 min-w-[200px] px-4 py-3 rounded-xl border border-white/20 shadow-sm text-left transition-colors relative overflow-hidden group"
-              style={{
-                background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(96, 165, 250, 0.15) 100%)',
-                backdropFilter: 'blur(8px)'
-              }}
-            >
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative z-10 text-xs font-semibold text-slate-700/90 leading-tight block">
-                {prompt.label[language]}
-              </span>
-            </motion.button>
-          ))}
-        </div>
-
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
-
-          {/* Steps Selector - Jelly Button Feel */}
-          <div className="flex flex-col gap-2 w-full md:w-auto">
-            <label className="text-sm font-medium text-slate-700 ml-1">
-              {t.futureStateDepth}
-              <span className="block text-xs text-slate-500 font-normal mt-0.5">
-                {t.futureStateDepthSub}
-              </span>
-            </label>
-            <motion.div
-              className="relative"
-              whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 15 } }}
-              whileTap={{ scale: 0.95, transition: { type: "spring", stiffness: 500, damping: 10 } }}
-            >
-              <select
-                value={steps}
-                onChange={(e) => onStepsChange(Number(e.target.value))}
-                className="appearance-none w-full md:w-64 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm transition-colors"
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-slate-500/80 ml-1">
+            {t.examplePrompts}
+          </span>
+          <div className="flex flex-col sm:flex-row gap-3 overflow-x-auto pb-1 scrollbar-hide">
+            {EXAMPLE_PROMPTS.map((prompt) => (
+              <motion.button
+                key={prompt.id}
+                onClick={() => onInputChange(prompt.text[language])}
+                whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.25)" }}
+                whileTap={{ scale: 0.98 }}
+                className="flex-1 min-w-[200px] px-4 py-3 rounded-xl border border-white/20 shadow-sm text-left transition-colors relative overflow-hidden group"
                 style={{
-                  // Subtle Pastel Jelly Gradient (Airy, light diffraction)
-                  background: 'radial-gradient(100% 180% at 50% 0%, rgba(232, 240, 255, 0.8) 0%, rgba(240, 230, 255, 0.4) 100%)',
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)'
+                  background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(96, 165, 250, 0.15) 100%)',
+                  backdropFilter: 'blur(8px)'
                 }}
               >
-                {[1, 2, 3, 4, 5].map(num => (
-                  <option key={num} value={num}>{num} {t.step}{num > 1 ? 's' : ''}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 pointer-events-none" />
-            </motion.div>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative z-10 text-xs font-semibold text-slate-700/90 leading-tight block">
+                  {prompt.label[language]}
+                </span>
+              </motion.button>
+            ))}
           </div>
 
-          {/* Run Button - CRITICAL REDESIGN */}
-          <motion.button
-            onClick={onRunSimulation}
-            disabled={isRunning}
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
 
-            // 1. Initial Press (Squash)
-            whileTap={{
-              scale: 0.92,
-              scaleY: 0.88, // Strong squash
-              scaleX: 1.05, // Bulge out
-              transition: { type: "spring", stiffness: 520, damping: 18, mass: 0.8 }
-            }}
+            {/* Steps Selector - Jelly Button Feel */}
+            <div className="flex flex-col gap-2 w-full md:w-auto">
+              <label className="text-sm font-medium text-slate-700 ml-1">
+                {t.futureStateDepth}
+                <span className="block text-xs text-slate-500 font-normal mt-0.5">
+                  {t.futureStateDepthSub}
+                </span>
+              </label>
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 15 } }}
+                whileTap={{ scale: 0.95, transition: { type: "spring", stiffness: 500, damping: 10 } }}
+              >
+                <select
+                  value={steps}
+                  onChange={(e) => onStepsChange(Number(e.target.value))}
+                  className="appearance-none w-full md:w-64 border border-white/40 rounded-xl px-4 py-3 pr-10 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-purple-300/20 cursor-pointer shadow-sm transition-colors"
+                  style={{
+                    // Subtle Pastel Jelly Gradient (Airy, light diffraction)
+                    background: 'radial-gradient(100% 180% at 50% 0%, rgba(232, 240, 255, 0.8) 0%, rgba(240, 230, 255, 0.4) 100%)',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.6)'
+                  }}
+                >
+                  {[1, 2, 3, 4, 5].map(num => {
+                    let label = `${num} ${t.step}${num > 1 ? 's' : ''}`;
+                    if (language === 'ko') {
+                      const krMap: Record<number, string> = { 1: '한단계', 2: '두단계', 3: '세단계', 4: '네단계', 5: '다섯단계' };
+                      label = krMap[num] || label;
+                    }
+                    return (
+                      <option key={num} value={num}>{label}</option>
+                    );
+                  })}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 pointer-events-none" />
+              </motion.div>
+            </div>
 
-            // 2. Rebound + Predicting State (Wobble)
-            animate={isRunning ? {
-              scale: [1, 1.02, 0.98, 1], // Subtle wobble
-              transition: {
-                type: "spring",
-                stiffness: 260,
-                damping: 16,
-                mass: 1.1,
-                repeat: Infinity,
-                repeatType: "mirror",
-                repeatDelay: 0.1
-              }
-            } : {
-              // Return to normal
-              scale: 1,
-              transition: { type: "spring", stiffness: 420, damping: 14, mass: 0.9 }
-            }}
+            {/* Run Button - CRITICAL REDESIGN */}
+            <motion.button
+              onClick={onRunSimulation}
+              disabled={isRunning}
 
-            whileHover={!isRunning ? {
-              scale: 1.05,
-              filter: "brightness(1.05)",
-              transition: { type: "spring", stiffness: 400, damping: 12 }
-            } : {}}
+              // 1. Initial Press (Squash)
+              whileTap={{
+                scale: 0.92,
+                scaleY: 0.88, // Strong squash
+                scaleX: 1.05, // Bulge out
+                transition: { type: "spring", stiffness: 520, damping: 18, mass: 0.8 }
+              }}
 
-            className={`
+              // 2. Rebound + Predicting State (STABILIZED)
+              // Fix: Removed infinite loop. Now sets specific stable state during running.
+              animate={isRunning ? {
+                scale: 0.98, // Slight compression to indicate busy/active state, but STATIC
+                boxShadow: "0 4px 12px rgba(99, 102, 241, 0.2)", // Reduced shadow to show 'pressed' depth
+                transition: { type: "spring", stiffness: 300, damping: 20 }
+              } : {
+                // Return to normal
+                scale: 1,
+                transition: { type: "spring", stiffness: 420, damping: 14, mass: 0.9 }
+              }}
+
+              whileHover={!isRunning ? {
+                scale: 1.05,
+                filter: "brightness(1.05)",
+                transition: { type: "spring", stiffness: 400, damping: 12 }
+              } : {}}
+
+              className={`
               relative overflow-hidden px-10 py-4 rounded-full font-bold text-white shadow-lg
               w-full md:w-auto
               disabled:cursor-not-allowed
             `}
-            style={{
-              // Pastel Glass Jelly Gradient (Harmonized Blue/Purple)
-              background: 'radial-gradient(140% 140% at 50% 10%, #A5B4FC 0%, #818CF8 40%, #6366F1 100%)',
+              style={{
+                // Pastel Glass Jelly Gradient UPDATED: Higher Transparency
+                // Using RGBA with 0.85 alpha for glass effect
+                background: 'radial-gradient(140% 140% at 50% 10%, rgba(165, 180, 252, 0.85) 0%, rgba(129, 140, 248, 0.85) 40%, rgba(99, 102, 241, 0.85) 100%)',
 
-              // Thick, glass-jelly shadow/highlight stack (Softer than before)
-              boxShadow: `
-                    inset 0 3px 6px rgba(255,255,255,0.4), 
-                    inset 0 -3px 6px rgba(0,0,0,0.1),
-                    0 8px 20px rgba(99, 102, 241, 0.3),
+                // Thick, glass-jelly shadow/highlight stack
+                // Softer highlights for more 'air'
+                boxShadow: `
+                    inset 0 2px 4px rgba(255,255,255,0.5),
+                    inset 0 -2px 4px rgba(0,0,0,0.05),
+                    0 8px 20px rgba(99, 102, 241, 0.25),
                     0 10px 0 rgba(99, 102, 241, 0.1)
                 `,
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}
-          >
-            {/* Glossy shine on top half */}
-            <div className="absolute top-0 left-0 right-0 h-2/5 bg-gradient-to-b from-white/30 to-transparent rounded-t-full pointer-events-none" />
+                border: '1px solid rgba(255,255,255,0.3)',
+                backdropFilter: 'blur(4px)' // Increased local blur
+              }}
+            >
+              {/* Glossy shine on top half */}
+              <div className="absolute top-0 left-0 right-0 h-2/5 bg-gradient-to-b from-white/40 to-transparent rounded-t-full pointer-events-none" />
 
-            <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-md text-lg tracking-wide">
-              {isRunning ? (
-                <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full"
-                  />
-                  {t.running}
-                </>
-              ) : (
-                <>
-                  <span className="text-xl">✨</span>
-                  {t.runSimulation}
-                </>
-              )}
-            </span>
-          </motion.button>
+              <span className="relative z-10 flex items-center justify-center gap-2 drop-shadow-md text-lg tracking-wide">
+                {isRunning ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-3 border-white/40 border-t-white rounded-full"
+                    />
+                    {t.running}
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xl">✨</span>
+                    {t.runSimulation}
+                  </>
+                )}
+              </span>
+            </motion.button>
+          </div>
         </div>
-      </div>
     </motion.div>
   );
 }

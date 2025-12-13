@@ -34,10 +34,10 @@ export default function StepCard({ step, summary, delay }: StepCardProps) {
 
       <div className="flex items-center gap-3 mb-4 relative z-10">
         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/30 text-slate-800 font-bold text-sm shadow-sm border border-white/20">
-          {step}
+          {step + 1}
         </div>
         <h3 className="text-lg font-semibold text-slate-800">
-          {t.step} {step}
+          {t.step} {step + 1}
         </h3>
       </div>
 
